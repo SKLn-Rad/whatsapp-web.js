@@ -1309,10 +1309,22 @@ class Client extends EventEmitter {
     /**
      * Get the registered WhatsApp ID for a number. 
      * Will return null if the number is not registered on WhatsApp.
-     * @param {string} number Number or ID ("@c.us" will be automatically appended if not specified)
+     * @param {string | Contact} number Number of the contact or Contact object
      * @returns {Promise<Object|null>}
      */
     async getNumberId(number) {
+        if (typeof number !== 'string') {
+            console.warn('getNumberId: Using a Contact object is deprecated. Use the ID directly.');
+            const contactNumber = number?.id?._serialized;
+            const directNumber = number?._serialized;
+
+            if (contactNumber) {
+                number = contactNumber;
+            } else if (directNumber) {
+                number = directNumber;
+            }
+        }
+
         if (!number.endsWith('@c.us')) {
             number += '@c.us';
         }
